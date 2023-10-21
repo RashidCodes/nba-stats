@@ -17,12 +17,11 @@ class TestNBA:
     """
     nba_website = getenv("NBA_WEBSITE")
 
-    # @pytest.mark.skip("Reduce requests to nba site and use sample html file")
+    @pytest.mark.skip("Reduce requests to nba site and use sample html file")
     def test_get_nba_table_stats(self):
         """
         Get the HTML of the NBA Website
         """
-        print(TestNBA.nba_website)
         with Firefox() as driver:
             driver.get(self.nba_website)
             result = driver.find_element(By.CLASS_NAME, "Crom_table__p1iZz")
@@ -30,7 +29,7 @@ class TestNBA:
             # print(result.get_attribute('innerHTML'))
             assert result is not None
 
-    @pytest.mark.skip("Table parsing complete")
+    # @pytest.mark.skip("Table parsing complete")
     def test_parse_nba_stats_table(self):
         """
         Parse the NBA Stats table 
@@ -50,6 +49,7 @@ class TestNBA:
                          for column in columns if column.attrs.get('hidden') is None]
 
         # Append table columns
+        table_columns[0] = 'Rank'
         table_data.append(table_columns)
 
         # Append table data
@@ -70,7 +70,6 @@ class TestNBA:
         print(f"Number of records: {len(table_data[1:])}")
         print(stats_df.head())
         assert len(table_data[1:]) >= 570
-        assert 1==0
 
 
     @pytest.mark.skip("Selection complete")

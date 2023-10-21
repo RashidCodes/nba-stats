@@ -55,6 +55,7 @@ class NBA:
                          for column in columns if column.attrs.get('hidden') is None]
 
         # Append table columns
+        table_columns[0] = 'Rank'
         table_data.append(table_columns)
 
         # Append table data
