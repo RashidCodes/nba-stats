@@ -107,6 +107,7 @@ class NBA:
                 
         except TimeoutException as err:
             logging.error(f"A timeout exception occurred: {err}")
+            return DataFrame()
 
         except BaseException as err:
             logging.error("An error occurred while fetching stats")
