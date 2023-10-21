@@ -1,9 +1,9 @@
 # Get NBA Statistics
 
-Scrape NBA Player statistics.
+Scrape NBA Player statistics using the `NBA` class
 
 
-# Usage
+# Sample Usage
 
 ## Create your env variables
 
