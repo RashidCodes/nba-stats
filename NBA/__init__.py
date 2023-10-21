@@ -86,7 +86,6 @@ class NBA:
                 driver.get(url)
                 driver.execute_script("window.scrollTo(0, 300)")
                 
-
                 # Select button xpath
                 select_btn_xpath = "//div[@class='Crom_cromSettings__ak6Hd']/div[1]//select"
 
