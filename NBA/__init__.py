@@ -5,7 +5,7 @@ from selenium.webdriver.support.expected_conditions import presence_of_element_l
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
-from pandas import DataFrame
+from pandas import DataFrame, concat
 import logging
 import re
 
@@ -115,10 +115,78 @@ class NBA:
         else:
             logging.info("Successfully parsed table data")
             return stats_df
+        
+
+    @staticmethod
+    def __parse_box_scores_table(table_str: str) -> DataFrame:
+        """
+        Parse box scores tables 
+        
+        :params table_str: str 
+            The table HTML string
+
+        :returns DataFrame 
+            Box Scores
+        """
+        soup = BeautifulSoup(table_str, features="html.parser")
+        team_header = soup.find('h2').text.strip()
+        table_data = []
+        table_head = soup.find('thead').find('tr')
+        table_body = soup.find('tbody')
+
+        rows: list = table_body.find_all('tr')
+        columns: list = table_head.find_all('th')
+        table_columns = [column.text for column in columns] + ['TEAMHEADER']
+
+        # Append table columns
+        table_data.append(table_columns)
+
+        # Append table rows
+        for row in rows:
+            row_data = row.find_all('td')
+            row_data_entries = [re.sub(r'\s+', " ", element.text.strip().replace('\n', '')) 
+                                for element in row_data] + [team_header]
+
+            table_data.append(row_data_entries)
+
+        # Create pandas dataframe 
+        result_df = DataFrame(table_data[1:], columns=table_data[0])
+        
+        return result_df
 
 
+    @staticmethod
+    def get_box_scores(url: str):
+        """
+        Get box scores from box scores website 
+        """
 
-    
+        stats_df = DataFrame()
+
+        try:
+            with Firefox() as driver:
+                driver.get(url)
+
+                # Wait for a max of 10 seconds for the element to appear
+                wait = WebDriverWait(driver, 10)
+                wait.until(presence_of_element_located((By.CLASS_NAME, "GameBoxscore_gbTableSection__zTOUg")))
+
+                results: list = driver.find_elements(By.CLASS_NAME, "GameBoxscore_gbTableSection__zTOUg")
+
+                for result in results:
+                    result_df = NBA.__parse_box_scores_table(result.get_attribute('innerHTML'))
+                    stats_df = concat([stats_df, result_df])
+
+        except TimeoutException as err:
+            logging.error(f"A timeout exception occurred: {err}")
+
+        except BaseException as err:
+            logging.error(f"An error occurred while fetching stats: {err}")
+            return DataFrame()
+
+        else:
+            logging.info("Successfully parsed table data")
+            return stats_df
 
     
 

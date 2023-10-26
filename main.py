@@ -6,11 +6,11 @@ def main():
     nba = NBA()
 
     # get statistics 
-    nba_website = getenv("NBA_WEBSITE")
-    stats_df = nba.get_stats(url=nba_website)
+    nba_website = getenv("BOX_SCORES")
+    stats_df = nba.get_box_scores(url=nba_website)
 
     if stats_df.shape[0] != 0:
-        stats_df.to_excel("./reports/stats.xlsx", index=False)
+        stats_df.to_csv("./reports/box_scores.csv", index=False)
 
 
 if __name__ == '__main__':
